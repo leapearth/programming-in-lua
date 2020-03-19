@@ -57,3 +57,5 @@ while
 > arg[1] = "a"
 > arg[2] = "b"
 
+## [第二章 类型与值](chapter-2.lua)
+**lua将false和nil视为假，其余都为真，也就是数字0和空字符串也为真**
