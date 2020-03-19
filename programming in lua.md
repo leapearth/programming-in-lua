@@ -59,3 +59,7 @@ while
 
 ## [第二章 类型与值](chapter-2.lua)
 **lua将false和nil视为假，其余都为真，也就是数字0和空字符串也为真**
+
+## [第三章 表达式](chapter-3.lua)
+
+
