@@ -172,7 +172,7 @@ lua会调整函数的返回值数量以适应不同的调用情况。
 	print(foo2())
 	print(10,11,12,foo2())
 > return语句会返回所有函数返回值
-### 5.3 变长参数
+### 5.2 变长参数
 ``` lua
 function add(...)
 	local s = 0
@@ -188,8 +188,26 @@ for i = 1, selsec('#', ...) do
 	local arg = select(i, ...)
 end
 调用select时必须传入一个固定实参selector和一系列变长参数，如果selector为数字n，那么返回第n个元素，否则selector只能为字符串“#”，这时返回变长参数的总数。
+```
 
+## [第6章 深入函数](chapter-6.lua)
 
+**lua中函数和所有其它值一样都是匿名的，它们没有名称。比如函数print，它其实是一个持有某函数的变量。**
+### 闭合函数
 
+	如果将一个函数写在另一个函数内部，那这个位于函数内部的函数就可以访问外部函数中的局部变量。
+``` lua
+-- 通过年纪来排序
+names = {"Peter","Paul","Mary"}
+grades = {Mary=10,Paul=7,Peter=8}
+table.sort(names,function (n1,n2)
+	return grades[n1] > grades[n2]
+	end)
 
-
+function sortbygrade(names, grades)
+	table.sort(names,function(n1,n2)
+		return grades[n1] > grades[n2]
+	end)
+end
+```
+第二个函数中匿名函数可以访问外部函数的局部变量grades
