@@ -232,4 +232,46 @@ function foo(n)
 	end
 end
 ```
-> 在lua中只有“return <func>(<args>)”这样的形式才算一条**尾调用**
+> ​		在lua中只有“return <func>(<args>)”这样的形式才算一条**尾调用**
+> 
+
+## [第七章](chapter-7.lua)
+
+### 7.1 迭代器与闭合函数
+​		lua中通常将迭代器表示为函数，每一次调用函数，即返回集合中的**下一个元素**。
+
+``` lua
+function values(t)
+    local i = 0
+    return function() i = i + 1; return t[i] end
+end
+```
+
+### 7.2 泛型for的语义
+
+​		泛型for在循环过程内部保存了迭代器函数，实际上他保存着3个值：一个迭代器函数、一个恒定状态、和一个控制变量。
+
+​		泛型for的语法如下:
+
+```lua
+for <var-list> in <exp-list> do
+	<body>
+end
+```
+``` lua
+for var_1, ..., var_n in <explist> do <block> end
+-- 等价与
+do
+local _f, _s, _var = <explist>
+while true do
+	local var_1, ..., var_n = _f(_s, _var)
+	_var = var_1
+	if _var == nil then
+		break
+	else
+		<block>
+	end
+end
+```
+
+​		假设迭代器函数为f，恒定状态为s，控制变量为a0，那么在循环过程中控制变量的值依次为a1 = f(s，a0)、a2 = f(s，a1)，直到ai为nil结束循环。
