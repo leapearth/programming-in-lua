@@ -27,4 +27,26 @@ print(c1())
 print(c2())
 print(c2())
 
+-- 非全局函数
+--[[
+local fact = function(n)
+    if n == 0 then
+        return 1
+    else
+        return n * fact(n - 1) -- 错误，尝试访问一个全局变量fact，fact为nil
+    end
+end
+print(fact(5))
+--]]
+local fact
+fact = function(n)
+    if n == 0 then 
+        return 1
+    else
+        return n * fact(n - 1)
+    end
+end
+print(fact(5))
+
+
 
