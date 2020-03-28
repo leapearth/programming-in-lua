@@ -3,7 +3,9 @@
 ## [第一章 开始](./chapter-1.lua)
 
 ### 1.1 程序块
+
  lua执行的每一段代码都称作**程序块**
+
 ``` lua
 function norm(x,y)
     return (x^2 + y^2)^0.5
@@ -15,13 +17,15 @@ end
 ```
 
 ### 1.2 词法规范
+
 lua中的标识符可以由任意字母、数字和下划线构成，不能以数字开头。
+
 ``` lua
 -- lua中的保留字
-and 	break 		do 		else 		elseif
-end 	false 		for 	function 	if 
-in  	local 		nil 	not 		or
-repeat 	return 		then 	true 		until
+and  	break   do 		else   		elseif
+end  	false   for  	function  	if
+in   	local   nil  	not   		or
+repeat  return  then  	true   		until
 while
 ```
 
@@ -37,15 +41,18 @@ while
 ```
 
 ### 1.3 全局变量
-​		全局变量不需要声明，只需要赋值就可以创建。访问未初始化的变量不会产生错误，访问结果是**nil**，如果要删除一个变量，就将其赋值为**nil**
+
+  全局变量不需要声明，只需要赋值就可以创建。访问未初始化的变量不会产生错误，访问结果是**nil**，如果要删除一个变量，就将其赋值为**nil**
 
 ### 1.4 解释器程序
+
 解释器程序的用法如下：
-	
+
 	lua [选项参数] [脚本[参数]]
 选项参数“-e”可以在命令行直接输入代码，如下：
-	
+
 	lua -e "print(math.sin(12))"
+
 选项参数“-l”用于加载库文件，如下：	
 	
 	lua -l a -e "x = 10"
@@ -60,17 +67,22 @@ while
 > arg[2] = "b"
 
 ## [第二章 类型与值](chapter-2.lua)
+
 **lua将false和nil视为假，其余都为真，也就是数字0和空字符串也为真**
 
 ## [第三章 表达式](chapter-3.lua)
 
 ## [第四章 语句](chapter-4.lua)
+
 ### 4.1 赋值
+
 lua允许多重赋值 如：
 	
 	a,b = 10,11
 	赋值后变量a为10，b为11
+
 ​		lua总是会将等号右边的值的个数调整到与右边相等，**若值的个数少于变量个数，那多余的变量会被赋值为nil，若值的个数多余变量的个数，那多余的值会被丢弃**。
+
 ``` lua
 a, b, c = 0, 1
 print(a, b, c) -- 0,1,nil
@@ -80,12 +92,15 @@ a, b, c = 0
 print(a, b, c) --0,nil,nil
 ```
 ### 4.2 局部变量与块
+
 lua中通过local来创建局部变量
+
 ``` lua
 j = 10	-- 全局变量
 local i = 11 --局部变量
 ```
 **局部变量的作用范围只限与声明它的那个块**
+
 ``` lua
 x = 10
 local i = 1 -- 程序块中的局部变量
@@ -103,33 +118,43 @@ else
 end
 print(x) -- 全局变量
 ```
+
 ### 4.3 控制结构
+
 #### 4.3.1 if then else
+
 if语句先测试条件，然后根据结果执行then部分或者else部分
 ``` lua
 if a < 0 then a = 0 end
 if a < b then return a else return b end
 ```
+
 也可以使用**elseif**来编写嵌套的if
 
 #### 4.3.2 while
+
 与其他语言的while一样
 
 #### 4.3.3 repeat
+
 repeat-until循环至少会执行一次。
 
 #### 4.3.4 数字型for循环
+
 ​		for循环有两种：数字型for和泛型for。
 数字型for如下
-​	
 
+``` lua
 	for var = exp1, exp2, exp3 do
 		....
 	end
+```
 ​		var从exp1变换到exp2，每次步长exp3.三个表达式的值在循环开始的时候一次性求值，var会被自动声明为for语句的局部变量。
 
 #### 4.3.5 泛型for循环
+
 泛型for循环通过一个迭代器函数来遍历所有值
+
 ``` lua
 for i,v in ipairs(a) do
 	print(i .. ":" .. v)
@@ -139,9 +164,13 @@ end
 ​		标准库提供了几种迭代器，迭代文件中每行的**io.lines**、迭代table元素的**pairs**、迭代数组元素的**ipairs**、迭代字符串中单词的**string.gmatch**等。
 
 ## [第五章 函数](chapter-5.lua)
+
 ​		lua为面向对象式的调用提供了一种特殊的语法**冒号操作符**。表达式o.foo(o,x)的另一种写法是o:foo(x)，冒号操作符将o作为foo的第一个参数。
+
 ### 5.1多重返回值
+
 lua允许函数返回多个结果。
+
 ``` lua
 s, e = string.find("hello lua users", "lua")
 print(s, e) -- 7, 9
@@ -172,7 +201,9 @@ lua会调整函数的返回值数量以适应不同的调用情况。
 	print(foo2())
 	print(10,11,12,foo2())
 > return语句会返回所有函数返回值
+
 ### 5.2 变长参数
+
 ``` lua
 function add(...)
 	local s = 0
@@ -183,6 +214,7 @@ function add(...)
 end
 ```
 ​		通常函数在遍历变长参数时只需使用表达式{...}，但是，有时变长参数中可能包含一些故意传入的nil，那就需要函数**select**来访问变长参数
+
 ``` lua
 for i = 1, selsec('#', ...) do
 	local arg = select(i, ...)
@@ -196,6 +228,7 @@ end
 ### 闭合函数
 
 	如果将一个函数写在另一个函数内部，那这个位于函数内部的函数就可以访问外部函数中的局部变量。
+
 ``` lua
 -- 通过年纪来排序
 names = {"Peter","Paul","Mary"}
@@ -213,10 +246,13 @@ end
 第二个函数中匿名函数可以访问外部函数的局部变量grades
 
 ### 6.2 非全局函数
+
 **函数不仅可以存储在全局变量中，还可以存储在table的字段中和局部变量中**
 
 ### 6.3 正确的尾调用
+
 ​		lua支持**尾调用消除**，尾调用即一种类似goto的函数调用，当一个函数调用是另一个函数的最后一个动作时，该调用才算是尾调用。
+
 ``` lua
 function f(x)
 	return g(x)
@@ -233,7 +269,6 @@ function foo(n)
 end
 ```
 > ​		在lua中只有“return <func>(<args>)”这样的形式才算一条**尾调用**
-> 
 
 ## [第七章](chapter-7.lua)
 
@@ -264,23 +299,71 @@ for var_1, ..., var_n in <explist> do <block> end
 do
 local _f, _s, _var = <explist>
 while true do
-	local var_1, ..., var_n = _f(_s, _var)
+ local var_1, ..., var_n = _f(_s, _var)
 	_var = var_1
 	if _var == nil then
-		break
+  break
 	else
 		<block>
 	end
 end
 ```
 
-​		假设迭代器函数为f，恒定状态为s，控制变量为a0，那么在循环过程中控制变量的值依次为a1 = f(s，a0)、a2 = f(s，a1)，直到ai为nil结束循环。
+  假设迭代器函数为f，恒定状态为s，控制变量为a0，那么在循环过程中控制变量的值依次为a1 = f(s，a0)、a2 = f(s，a1)，直到ai为nil结束循环。
 
 ## [第八章 编译、执行与错误](chapter-8.lua)
 
+### 8.1 编译
+
+​		dofile函数是一种内置的操作，用于运行Lua代码块，但实际上dofile是一个辅助函数，loadfile才做了真正的核心工作。loadfile会从一个文件加载Lua代码块，但它不会运行代码，只是编译代码，然后将编译结果作为一个函数返回。
+
+​		dofile可以这样来定义：
+
+``` lua
+function dofile(filename)
+    local f = assert(loadfile(filename))
+    return f()
+end
+```
+
+​		如果loadfile失败，assert就会引发一个错误。
+
+​		函数loadstring和loadfile类似，不同之处是它从一个字符串中读取代码。
+
+``` lua
+f = loadstring("i = i + 1")
+```
+
+​		f就变成了一个函数，每次调用执行 “i = i + 1”
+
+​		loadstring在编译时不涉及词法域，所以会出现以下：
+
+``` lua
+i = 32
+local i = 0
+f = loadstring("i = i + 1; print(i)")
+g = function() i = i + 1;print(i) end
+f()	-- 33
+g() -- 1
+```
+
+​		loadstring总是在全局环境中编译它的字符串，所以导致操作了全局的i。
+
+### 8.3 错误
+
+Lua所遇到的任何未预期条件都会引发一个错误。例如，当视图将两个非数字的值相加、对一个不是函数的值用函数调用的方式调用。也可以显式的引发一个错误，通过调用error函数并传入一个错误消息的参数。
+
+``` lua
+print("enter a number:")
+n = io.read("*number")
+if not n then error("invalid input") end
+```
+
+
+
 ## [第九章 协同程序](chapter-9.lua)
 
-​		协同程序和线程差不多，拥有自己独立的栈、局部变量和指针指令，同时又有与其他协同程序共享的全局变量和其他大部分东西。协同程序和线程的区别在于：**一个具有多个线程的程序可以同时运行几个线程，而协同程序却需要彼此协作地运行，也就是一个具有多个协同程序的程序在任意时刻只能运行一个协同程序。**
+  协同程序和线程差不多，拥有自己独立的栈、局部变量和指针指令，同时又有与其他协同程序共享的全局变量和其他大部分东西。协同程序和线程的区别在于：**一个具有多个线程的程序可以同时运行几个线程，而协同程序却需要彼此协作地运行，也就是一个具有多个协同程序的程序在任意时刻只能运行一个协同程序。**
 
 ### 9.1 协同程序基础
 
@@ -293,4 +376,8 @@ end
 
 
 ## 10.2 马尔科夫链算法
+
+
+
+## [第十一章 数据结构](chapter-11.lua)
 
