@@ -453,3 +453,54 @@ print(tab.x, tab.z) -- 10 0
 
 
 
+## [第十四章 环境](chapter-14.lua)
+
+
+
+###  14.2 全局变量声明
+
+​		lua中的全局变量不需要声明就可以使用，在大型程序中很容易出现变量名写错造成bug。由于lua将全局变量存放在一个普通的table中，可以通过元表来改变访问其全局变量时的行为。
+
+``` lua
+-- 一种是简单的检测所有对全局table中不存在的key的访问
+setmetatable(_G, {
+        __newindex = function(_,n)
+            error("attempt to write undeclared variable" .. n, 2)
+            end,
+        __index = function(_, n)
+            error("attempt to read undeclared variable" .. n, 2)
+        end,
+    })
+```
+
+
+
+###  14.3 非全局变量的声明
+
+​		可以通过函数setfenv来改变一个函数的环境，该函数的参数是一个函数和一个新的环境table。第一个参数除了可以指定为函数本身，还可以指定为一个数字，以表示当前函数调用栈中的层数。数字1表示当前函数，数字2表示调用当前函数的函数，以此类推。
+
+​		一旦改变了环境，所有的全局访问就都会使用心得table，比如print之类的函数，如果新的table是空的，那么print就会出错，所以要先将一些有用的值拷贝一份。
+
+``` lua
+a = 1
+setfenv(1, {g = _G})
+g.print(a)	--nil
+g.print(g.a)	--1 a在原来的环境中声明，原来的环境被拷贝到了g中，现在切换了新的环境
+				--所以要访问a要是g.a
+```
+
+
+​		在这段代码中新环境从原环境中继承了print和a，任何的赋值操作都在新环境，对原环境没有影响。
+
+``` lua
+a = 1
+local newgt = {}
+setmetatable(newgt, {__newindex = _G})
+setfenv(1,newgt)
+print(a)
+```
+
+
+
+
+
