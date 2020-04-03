@@ -502,5 +502,153 @@ print(a)
 
 
 
+## [第十五章 模块与包](chapter-15.lua)
+
+​		lua可以通过require来使用模块，module来创建模块。
+
+``` lua
+require "mod"
+mod.foo()
+-- 还可以为模块设置一个局部名称
+local m = require "mod"
+m.foo()
+-- 还可以为个别函数提供不同的名称
+require "mod"
+local f = mod.foo
+f()
+```
+
+### 15.1 require函数
+
+``` lua
+function require(name)
+    if not package.loaded[name] then
+        local loader = findloader(name)
+        if loader == nil then
+            error("unable to load module" .. name)
+        end
+        package.loaded[name] = true
+        local res = loader(name)
+        if res ~= nil then
+            package.loaded[name] = res
+        end
+    end
+    return package.loaded[name]
+end
+```
+
+​		如果require为指定模块找到了一个lua文件，那就通过loadfile来加载该文件。如果找到的是一个C程序库，就通过loadlib来加载。
+
+
+
+### 15.2 编写模块的基本方法
+
+​		在lua中创建一个模块最简单的方法是：创建一个table，将所有需要导出的函数放入其中，最后返回这个table。
+
+``` lua
+complex = {}
+
+function complex.new (r, i)
+    return {r = r, i = i}
+end
+-- 定义一个常量 'i'
+complex.i = complex,new(0,1)
+
+function complex.add (c1, c2)
+	return complex.new(c1.r + c2.r, c1.i + c2.i)
+end
+
+function complex.sub (c1, c2)
+    return complex.new(c1.r - c2.r, c1.i - c2.i)
+end
+
+function complex.mul (c1, c2)
+    return complex.new(c1.r * c2.r - c1.i * c2.i, c1.r * c2.i + c1.i * c2.r)
+end
+
+local function inv (c)
+    local n = c.r^2 + c.i^2
+    return complex.new(c.r / n, -c.i / n)
+end
+
+function complex.div (c1, c2)
+    return complex.new(c1, inv(c2))
+end
+
+return complex
+```
+
+​		上面的例子中没有提供与真正模板完全一致的功能性，必须要显示的将模块名放到每个函数的定义中，其次，一个函数在调用同一个模块中的另一个函数时，必须限制被调用函数的名称。可以使用一个固定的局部名称来定义和调用模块内的函数，然后将这个局部名称赋予模块最终的名称。
+
+``` lua
+local M = {}
+complex = M -- 模块名
+
+M.i = {r = 0, i = 1}
+
+function M.new (r, i)
+    return {r = r, i = i}
+end
+
+function M.add (c1, c2)
+    return M.new(c1.r + c2.r, c1.i + c2.i)
+end
+-- <其余如上>
+```
+
+​		require函数会将模块名作为参数传给模块。
+
+``` lua
+local modname = ...
+local M = {}
+_G[modname] = M
+```
+
+
+
+### 15.3 使用环境
+
+​		创建模块的基本方法缺点在于，他要求程序员在访问同一模块中其他公共实体时必须限定名称，并且只要一个函数的状态从私有变为公有就必须修改调用。另外在私有声明中也很容易忘记local关键字。
+
+​		让模块的主程序独占一个环境，这样不仅它的所有函数都可以共享这个table，而且他的所有全局变量也都自动记录在这个table中，还可以将它所有的公有函数声明为全局变量。模块要做的就是将这个table赋予模块名和packag.loaded。
+
+``` lua
+local modname = ...
+local M = {}
+_G[modname] = M
+package.loaded[modname] = M
+setfenv(1, M)
+--当声明函数add时，他就成为了complex.add
+function add (c1, c2)
+    return new(c1.r + c2.r, c1.i + c2.i)
+end
+```
+
+
+
+###  15.4 module函数
+
+​		在开始编写一个模块时，可以直接用module(...)代码来取代：
+
+``` lua
+local modname = ...
+local M = {}
+_G[modname] = M
+package.loaded[modname] = M
+	-- 其他
+setfenv(1, M)
+```
+
+​		默认情况下，module不提供外部访问。必须在调用它之前，为需要访问的外部函数或模块声明适当的局部变量。也可以通过继承来实现外部访问，只需要在调用module时加一个选项package.seeall。其等价于：
+
+```lua
+-- module(..., package.seeall)
+setmetatable(M, {__index = _G})
+```
+
+
+
+### 15.5 子模块与包
+
 
 
