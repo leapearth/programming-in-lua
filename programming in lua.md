@@ -652,3 +652,6 @@ setmetatable(M, {__index = _G})
 
 
 
+## [第十五章 面向对象编程](chapter-15.lua)
+
+​		lua中的table就是一种对象，table与对象一样可以拥有状态，table也与对象一样拥有一个独立于其值的标识（一个self），table与对象一样具有独立于创建者和创建地的生命周期。
